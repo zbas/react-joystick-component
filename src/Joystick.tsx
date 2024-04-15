@@ -20,6 +20,7 @@ export interface IJoystickProps {
     baseShape?: JoystickShape;
     stickShape?: JoystickShape;
     controlPlaneShape?: JoystickShape;
+    controlLength? : number;
     minDistance?: number;
     pos?: {x: number, y: number};
 }
@@ -76,6 +77,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
     private frameId: number | null = null;
 
     private _radius: number;
+    private _controlLength: number;
     private _parentRect: DOMRect | null = null;
     private _pointerId: number | null = null;
     private _mounted = false;
@@ -87,6 +89,7 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
         };
         this._baseSize = this.props.size || 100;
         this._radius = this._baseSize / 2;
+        this._controlLength = this.props.controlLength || this._radius;
 
         this._throttleMoveCallback = (() => {
             let lastCall = 0;
@@ -261,12 +264,12 @@ class Joystick extends React.Component<IJoystickProps, IJoystickState> {
             const bounded = shapeBoundsFactory(
                 //@ts-ignore
                 this.props.controlPlaneShape || this.props.baseShape,
+                this._controlLength,
                 absoluteX,
                 absoluteY,
                 relativeX,
                 relativeY,
                 dist,
-                this._radius/2,
                 this._baseSize,
                 this._parentRect);
             relativeX = bounded.relativeX
